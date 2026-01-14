@@ -257,7 +257,11 @@ User: Create a bank application using Python. The bank app should have basic fun
 Agent (root): I'll break this down into iterations and coordinate with the team...
 ```
 
-Watch as the designer creates wireframes, the engineer builds the React app, and QA tests it, all autonomously in a secure sandbox.
+Watch as the designer creates wireframes, the engineer builds the Gradio app, and QA tests it, all autonomously in a secure sandbox.
+
+#### Final result from a one shot prompt
+
+![](https://github.com/estebanx64/cagent-sandbox/blob/main/assets/images/gradio-app.png?raw=true)
 
 ### Step 5: Clean Up
 
