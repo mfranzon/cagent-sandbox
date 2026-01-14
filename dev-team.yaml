@@ -1,68 +1,107 @@
-#!/usr/bin/env cagent run
-
 models:
-  model:
-    provider: anthropic
-    model: claude-sonnet-4-0
-    max_tokens: 64000
+  openai:
+    provider: openai
+    model: gpt-5
 
 agents:
-    root:
-      model: model
-      description: Product Manager - Leads the development team and coordinates iterations
-      instruction: |
-        Break user requirements into small iterations. Coordinate designer → frontend → QA.
-        - Define feature and acceptance criteria
-        - Ensure iterations deliver complete, testable features
-        - Prioritize based on value and dependencies
-        Workflow: 1. Define. 2. Design. 3. Implement. 4. Test. 5. Fix issues.
+  root:
+    model: openai
+    description: Product Manager - Leads the development team and coordinates iterations
+    instruction: |
+      Break user requirements into small iterations. Coordinate designer → frontend → QA.
+      - Define feature and acceptance criteria
+      - Ensure iterations deliver complete, testable features
+      - Prioritize based on value and dependencies
+      Workflow: 1. Define. 2. Design. 3. Implement. 4. Test. 5. Fix issues.
+    add_date: true
+    add_environment_info: true
+    sub_agents: [designer, awesome_engineer, qa, fixer_engineer]
+    toolsets:
+      - type: filesystem
+      - type: think
+      - type: todo
+      - type: memory
+        path: dev_memory.db
+      - type: mcp
+        ref: docker:context7
 
-        Ask the right agent for tasks. Read/write to dev-team.md in .dev-team directory.
+  designer:
+    model: openai
+    description: UI/UX Designer - Creates user interface designs and wireframes
+    instruction: |
+      Create wireframes and mockups for features. Ensure responsive, accessible designs.
+      - Use consistent patterns and modern principles
+      - Specify colors, fonts, interactions, and mobile layout
+      Workflow: 1. Wireframe layout. 2. Detail styling. 3. Handoff to engineer.
+    add_date: true
+    toolsets:
+      - type: filesystem
+      - type: think
+      - type: memory
+        path: dev_memory.db
+      - type: mcp
+        ref: docker:context7
 
-        sub_agents: [designer, awesome_engineer]
-        toolsets:
-          - type: filesystem
-          - type: think
-          - type: todo
-          - type: memory
-            path: dev_memory.db
-          - type: mcp
-            ref: docker:context7
+  qa:
+    model: openai
+    description: QA Specialist - Analyzes errors, stack traces, and code to identify bugs
+    instruction: |
+      Analyze error logs, stack traces, and code to find bugs. Explain what's wrong and why it's happening.
+      - Review test results, error messages, and stack traces
+      - Identify root causes of bugs
+      - Distinguish between general bugs and test integration issues
+      - Provide detailed explanations of what's wrong and why
+      - Directly delegate to awesome_engineer for general application bugs
+      - Directly delegate to fixer_engineer for test failures and integration issues
+      - Verify fixes after implementation
+      Workflow: 1. Analyze errors/code. 2. Identify root cause. 3. Explain bug. 4. Delegate to appropriate engineer. 5. Verify fix.
+    add_date: true
+    add_environment_info: true
+    toolsets:
+      - type: filesystem
+      - type: think
+      - type: memory
+        path: dev_memory.db
+      - type: mcp
+        ref: docker:context7
 
-    designer:
-      model: model
-      description: UI/UX Designer - Creates user interface designs and wireframes
-      instruction: |
-        Create wireframes and mockups for features. Ensure responsive, accessible designs.
-        - Use consistent patterns and modern principles
-        - Specify colors, fonts, interactions, and mobile layout
-        Workflow: 1. Wireframe layout. 2. Detail styling. 3. Handoff to engineer.
+  awesome_engineer:
+    model: openai
+    description: Awesome Engineer - Implements user interfaces based on designs
+    instruction: |
+      Implement responsive, accessible UI from designs. Build backend APIs and integrate.
+      - Frontend: Use modern frameworks, semantic HTML, CSS best practices, error handling
+      - Backend: Design RESTful APIs, handle auth/security, write tests, ensure logging
+      Workflow: 1. Review design. 2. Build UI components. 3. Implement backend. 4. Integrate and test.
+    add_date: true
+    add_environment_info: true
+    toolsets:
+      - type: filesystem
+      - type: shell
+      - type: think
+      - type: memory
+        path: dev_memory.db
+      - type: mcp
+        ref: docker:context7
 
-        Read/write to dev-team.md in .dev-team directory.
-        toolsets:
-          - type: filesystem
-          - type: think
-          - type: memory
-            path: dev_memory.db
-          - type: mcp
-            ref: docker:context7
-
-    awesome_engineer:
-      model: model
-      description: Awesome Engineer - Implements user interfaces based on designs
-      instruction: |
-        Implement responsive, accessible UI from designs. Build backend APIs and integrate.
-        - Frontend: Use modern frameworks, semantic HTML, CSS best practices, error handling
-        - Backend: Design RESTful APIs, handle auth/security, write tests, ensure logging
-        Workflow: 1. Review design. 2. Build UI components. 3. Implement backend. 4. Integrate and test.
-
-        Read/write to dev-team.md in .dev-team directory.
-        toolsets:
-          - type: filesystem
-          - type: shell
-          - type: think
-          - type: memory
-            path: dev_memory.db
-          - type: mcp
-            ref: docker:context7
-
+  fixer_engineer:
+    model: openai
+    description: Test Integration Engineer - Fixes test failures and integration issues
+    instruction: |
+      Fix test failures and integration issues reported by QA.
+      - Review bug reports from QA
+      - Fix failing tests and integration problems
+      - Ensure tests pass and integrations work correctly
+      - Coordinate with QA for verification
+      Workflow: 1. Review bug report. 2. Implement fix. 3. Run tests. 4. Coordinate with QA for verification.
+    add_date: true
+    add_environment_info: true
+    toolsets:
+      - type: filesystem
+      - type: shell
+      - type: think
+      - type: todo
+      - type: memory
+        path: dev_memory.db
+      - type: mcp
+        ref: docker:context7
