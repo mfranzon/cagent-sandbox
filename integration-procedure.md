@@ -3,7 +3,7 @@
 This document outlines the steps to run a cagent agent team (e.g., dev-team.yaml) securely inside a Docker Sandbox environment.
 
 ## Prerequisites
-- Docker Desktop 4.50+ with sandbox support installed.
+- Docker Desktop 4.49+ with sandbox support installed.
 - cagent binary available on host (included in Docker Desktop 4.49+).
 - A cagent config file (e.g., dev-team.yaml) in the workspace directory.
 

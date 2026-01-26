@@ -62,7 +62,7 @@ agents:
       Implement responsive, accessible UI from designs. Build backend APIs and integrate.
     ..........
  
- fixer_engineer:
+  fixer_engineer:
     model: openai
     description: Test Integration Engineer - Fixes test failures and integration issues
     instruction: |
@@ -140,7 +140,7 @@ Your workspace `/Users/alice/projects/myapp` on the host is also `/Users/alice/p
 
 ![](https://github.com/estebanx64/cagent-sandbox/blob/main/assets/images/docker-sandbox.png?raw=true)
 
-## Why Docker Sandboxes Matters
+## Why Docker Sandboxes Matter
 
 The combination of cagent and Docker Sandboxes gives you something powerful:
 
@@ -238,8 +238,8 @@ docker cp $(which cagent) $(docker sandbox ls --filter name=my-dev-sandbox -q):/
 ### Step 3: Set Environment Variables
 
 ```bash
-# Set your API key inside the sandbox
-docker exec -it my-dev-sandbox bash -c "export OPENAI_API_KEY=your_key_here"
+# Run cagent with your API key (passed inline since export doesn't persist across exec calls)
+docker exec -it -e OPENAI_API_KEY=your_key_here my-dev-sandbox bash
 ```
 
 ### Step 4: Run Your Agent Team
